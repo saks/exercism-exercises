@@ -1,0 +1,99 @@
+const HYPEN: &str = "-";
+const SPACE: &str = " ";
+const WORDS: &[&str] = &["",
+                         "one",
+                         "two",
+                         "three",
+                         "four",
+                         "five",
+                         "six",
+                         "seven",
+                         "eight",
+                         "nine",
+                         "ten",
+                         "eleven",
+                         "twelve",
+                         "therteen",
+                         "fourteen",
+                         "fifteen",
+                         "sixteen",
+                         "seventeen",
+                         "eighteen",
+                         "nineteen"];
+
+const TENS: &[&str] = &["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy",
+                        "eighty", "ninety"];
+const TEN_POWERS: &[&str] = &["",
+                              "ten",
+                              "hundred",
+                              "thousand",
+                              "",
+                              "",
+                              "million",
+                              "",
+                              "",
+                              "billion",
+                              "",
+                              "",
+                              "trillion",
+                              "",
+                              "",
+                              "quadrillion",
+                              "",
+                              "",
+                              "quintillion"];
+
+fn spell(n: u64) -> &'static str {
+    match n {
+        1...19 => WORDS[n as usize],
+        20...90 => TENS[(n / 10) as usize],
+        _ => "",
+    }
+}
+
+fn spell_tens(number_of_tens: u64, power: &u32) -> String {
+    internal_encode(number_of_tens).to_string() + SPACE + TEN_POWERS[(*power) as usize]
+}
+
+pub fn encode(n: i64) -> String {
+    if 0 == n {
+        String::from("zero")
+    } else if n < 0 {
+        String::from("won't compile")
+    } else {
+        internal_encode(n as u64)
+    }
+}
+
+fn internal_encode(mut n: u64) -> String {
+    if n < 21 {
+        return spell(n).to_string();
+    }
+
+    let mut result = Vec::new();
+
+    for power in &[18, 15, 12, 9, 6, 3, 2] {
+        let ten: u64 = 10u64.pow(*power);
+        let number_of_tens = n / ten;
+        if number_of_tens > 0 {
+            result.push(spell_tens(number_of_tens, power));
+            n %= ten;
+        }
+    }
+
+    match n {
+        0 => {}
+        20...99 => {
+            let tens = (n / 10) * 10;
+            let mut temp = spell(tens).to_string();
+            if n > tens {
+                temp += HYPEN;
+                temp += spell(n - tens);
+            }
+            result.push(temp)
+        }
+        _ => result.push(spell(n).to_string()),
+    }
+
+    result.join(SPACE)
+}
