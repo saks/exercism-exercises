@@ -10,13 +10,12 @@ impl School {
     }
 
     pub fn add(&mut self, grade: u32, student: &str) {
-        // unimplemented!()
+        let names = self.data.entry(grade).or_insert_with(BTreeSet::new);
+        names.insert(student.to_string());
     }
 
     pub fn grades(&self) -> Vec<u32> {
-        let result = Vec::new();
-
-        result
+        self.data.keys().cloned().collect()
     }
 
     // If grade returned an `Option<&Vec<String>>`,
@@ -24,8 +23,9 @@ impl School {
     // By returning an owned vector instead,
     // the internal implementation is free to use whatever it chooses.
     pub fn grade(&self, grade: u32) -> Option<Vec<String>> {
-        let result = Vec::new();
-
-        Some(result)
+        match self.data.get(&grade) {
+            Some(set) => Some(set.iter().cloned().collect()),
+            None => None,
+        }
     }
 }
