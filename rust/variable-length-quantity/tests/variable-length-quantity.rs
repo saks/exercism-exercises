@@ -127,8 +127,8 @@ fn from_bytes_multiple_values() {
 
 #[test]
 fn incomplete_byte_sequence() {
-    println!("{:?}", vlq::from_bytes(&[0xff]));
     assert!(vlq::from_bytes(&[0xff]).is_err());
+    assert!(vlq::from_bytes(&[0x10, 0x30, 0x40, 0x80]).is_err());
 }
 
 #[test]
